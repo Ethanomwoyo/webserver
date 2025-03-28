@@ -1,26 +1,28 @@
 // custom web server from scratch
-import {Socket, createServer } from "net";
+import * as net from "net";
 
-function newConn(socket) {
+function newConn(socket: net.Socket): void {
     console.log('new connection', socket.remoteAddress, socket.remotePort);
 
     socket.on('end', () => {
-        // FIN received. The connection will be closed automatically
+        // FIN received. The connection will be closed immediately
         console.log('EOF.');
     });
-    socket.on('data', (data) => {
+    socket.on('data', (data: Buffer) => {
         console.log('data:', data);
         socket.write(data); // echo back the data
 
-        // actively close the connection if the data contains 'q'
-        if (data.toString().includes('q')) {
+        // actively closed the connection if the data contains 'q'
+        if (data.includes('q')) {
             console.log('closing.');
-            socket.end(); // this will send the FIN and close the connection
+            socket.end(); // this will send FIN and close the connection
         }
     });
 }
 
-let server = createServer();
-server.on('error', (err) => { throw err; });
+let server = net.createServer();
+server.on('error', (err: Error) => {throw err;});
 server.on('connection', newConn);
-server.listen({ host: '127.0.0.1', port: 1234 });
+server.listen({host: '127.0.0.1', port: 1234});
+
+// Start the echo server by running node --enable-source-maps echo_server.js and test it with the nc or socat command
