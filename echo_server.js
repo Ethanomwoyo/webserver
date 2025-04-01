@@ -18,6 +18,7 @@ function newConn(socket) {
         // actively closed the connection if the data contains 'q'
         if (data.toString().includes('q')) { // Convert data to string before checking
             console.log('closing.');
+            
             socket.end(); // close the connection
         }
     });
